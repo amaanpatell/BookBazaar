@@ -4,10 +4,10 @@ import cookieParser from "cookie-parser";
 //router imports
 import healthCheckRouter from "./src/routes/healthcheck.routes.js";
 import authRoutes from "./src/routes/auth.routes.js";
+import bookRoutes from "./src/routes/book.routes.js";
 
 const app = express();
 
-// CORS configuration
 app.use(
   cors({
     origin:
@@ -25,5 +25,6 @@ app.use(urlencoded({ extended: true }));
 // Routes
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/books", bookRoutes)
 
 export default app;

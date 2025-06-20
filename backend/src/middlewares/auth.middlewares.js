@@ -16,7 +16,7 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
     const user = await User.findById(decoded._id);
     if (!user) throw new ApiError(401, "User not found");
     req.user = user;
-    return next();
+    next();
   } catch (err) {
     // Access token failed, try refresh token
     if (!refreshToken) {
@@ -47,4 +47,11 @@ export const verifyUser = asyncHandler(async (req, res, next) => {
       throw new ApiError(401, "Unauthorized - Refresh token expired");
     }
   }
+});
+
+export const isAdmin = asyncHandler(async (req, res, next) => {
+  if (!req.user || req.user.userRole !== "admin") {
+    throw new ApiError(403, "Forbidden - Admin access required");
+  }
+  next();
 });

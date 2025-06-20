@@ -1,4 +1,4 @@
-import { ApiKey } from "../models/apiKey.model.js";
+import { ApiKey } from "../models/apiKey.models.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
 
