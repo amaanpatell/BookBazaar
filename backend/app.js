@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import healthCheckRouter from "./src/routes/healthcheck.routes.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import bookRoutes from "./src/routes/book.routes.js";
+import reviewRoutes from "./src/routes/reviews.routes.js";
 
 const app = express();
 
