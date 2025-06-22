@@ -17,15 +17,6 @@ const cartItemSchema = new Schema(
       required: true,
       min: 1,
     },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );

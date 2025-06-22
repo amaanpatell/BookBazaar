@@ -1,13 +1,13 @@
-import CartItem from "../models/cartItems.models";
-import { asyncHandler } from "../utils/async-handler";
-import { ApiError } from "../utils/api-error";
-import { ApiResponse } from "../utils/api-response";
+import CartItem from "../models/cartItems.models.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { ApiError } from "../utils/api-error.js";
+import { ApiResponse } from "../utils/api-response.js";
 
 export const addCartItem = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const { bookId, quantity, price, title } = req.body;
+  const { bookId, quantity } = req.body;
 
-  if (!bookId || !quantity || !price || !title) {
+  if (!bookId || !quantity ) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -21,8 +21,6 @@ export const addCartItem = asyncHandler(async (req, res) => {
       bookId,
       userId,
       quantity,
-      price,
-      title,
     });
   }
 
@@ -37,7 +35,7 @@ export const getUserCart = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const cartItems = await CartItem.find({ userId }).populate(
     "bookId",
-    "title price"
+    "title "
   );
 
   if (!cartItems || cartItems.length === 0) {

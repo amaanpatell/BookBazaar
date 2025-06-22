@@ -1,10 +1,10 @@
-import { Review } from "../models/review.model.js";
+import { Review } from "../models/reviews.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
 
 export const addReview = asyncHandler(async (req, res) => {
-  const bookId = req.params.id;
+  const bookId = req.params.bookId;
   const userId = req.user._id;
   const { rating, comment } = req.body;
 
@@ -36,7 +36,7 @@ export const addReview = asyncHandler(async (req, res) => {
 });
 
 export const getReviewsByBookId = asyncHandler(async (req, res) => {
-  const bookId = req.params.id;
+  const bookId = req.params.bookId;
   if (!bookId) {
     throw new ApiError(400, "Book ID is required");
   }
@@ -56,7 +56,7 @@ export const getReviewsByBookId = asyncHandler(async (req, res) => {
 });
 
 export const deleteReview = asyncHandler(async (req, res) => {
-  const reviewId = req.params.id;
+  const reviewId = req.params.reviewId;
   const userId = req.user?._id;
 
   if (!reviewId) {

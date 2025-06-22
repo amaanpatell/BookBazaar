@@ -1,7 +1,8 @@
-import { Order } from "../models/orders.models";
+import { Order } from "../models/orders.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
+import { Book } from "../models/books.models.js"; 
 
 export const createOrder = asyncHandler(async (req, res) => {
   const { orderItems, shippingAddress } = req.body;
@@ -9,9 +10,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   if (!orderItems || orderItems.length === 0) {
     throw new ApiError(400, "Order items are required");
   }
-  if (!totalAmount || totalAmount <= 0) {
-    throw new ApiError(400, "Total amount must be greater than zero");
-  }
+
   if (
     !shippingAddress ||
     !shippingAddress.fullName ||
@@ -19,38 +18,51 @@ export const createOrder = asyncHandler(async (req, res) => {
     !shippingAddress.city ||
     !shippingAddress.postalCode
   ) {
-    throw new ApiError(400, "Shipping address is required");
+    throw new ApiError(400, "Complete shipping address is required");
   }
 
-  const totalAmount = orderItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  // Build orderItems array with verified prices from DB
+  let verifiedItems = [];
+  let totalAmount = 0;
+
+  for (const item of orderItems) {
+    const book = await Book.findById(item.bookId);
+    if (!book) {
+      throw new ApiError(404, `Book not found with ID: ${item.bookId}`);
+    }
+
+    const quantity = item.quantity || 1;
+    const itemTotal = book.price * quantity;
+    totalAmount += itemTotal;
+
+    verifiedItems.push({
+      bookId: book._id,
+      quantity,
+    });
+  }
+
   if (totalAmount <= 0) {
     throw new ApiError(400, "Total amount must be greater than zero");
   }
 
+  // Create order
   const order = await Order.create({
     user: req.user._id,
-    orderItems,
+    orderItems: verifiedItems,
     totalAmount,
     shippingAddress,
   });
 
-  if (!order) {
-    throw new ApiError(500, "Failed to create order");
-  }
-
   res
     .status(201)
-    .json(new ApiResponse(201, order, "Order created successfully"));
+    .json(new ApiResponse(201, order, "Order placed successfully"));
 });
+
 
 export const getAllOrders = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   const orders = await Order.find({ user: userId })
-    .populate("orderItems.book", "title author price")
     .sort({ createdAt: -1 });
 
   if (!orders || orders.length === 0) {
@@ -70,8 +82,6 @@ export const getOrderById = asyncHandler(async (req, res) => {
     _id: orderId,
     user: userId,
   })
-    .populate("orderItems.book", "title author price")
-    .populate("user", "name email");
 
   if (!order) {
     throw new ApiError(404, "Order not found");

@@ -1,24 +1,23 @@
-// routes/cart.routes.js
 import { Router } from "express";
 import {
-  addToCart,
   getUserCart,
   updateCartItem,
   removeCartItem,
   clearCart,
+  addCartItem,
 } from "../controllers/cartItmes.controllers.js";
-import { verifyUser } from "../middlewares/auth.middleware.js";
+import { verifyUser } from "../middlewares/auth.middlewares.js";
 
-const cartItem = Router();
+const cartRoutes = Router();
 
-cartItem.post("/add-to-cart", verifyUser, addToCart);
+cartRoutes.get("/", verifyUser, getUserCart);
 
-cartItem.get("/get-all-items", verifyUser, getUserCart);
+cartRoutes.post("/", verifyUser, addCartItem);
 
-cartItem.put("/cart/:id", verifyUser, updateCartItem);
+cartRoutes.put("/:itemId", verifyUser, updateCartItem);
 
-cartItem.delete("/cart/:id", verifyUser, removeCartItem);
+cartRoutes.delete("/:itemId", verifyUser, removeCartItem);
 
-cartItem.delete("/cart", verifyUser, clearCart);
+cartRoutes.delete("/", verifyUser, clearCart);
 
-export default cartItem;
+export default cartRoutes;

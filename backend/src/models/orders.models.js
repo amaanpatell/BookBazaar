@@ -9,7 +9,7 @@ const orderSchema = new Schema(
     },
     orderItems: [
       {
-        book: {
+        bookId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Book",
           required: true,
@@ -18,10 +18,6 @@ const orderSchema = new Schema(
           type: Number,
           required: true,
           min: 1,
-        },
-        price: {
-          type: Number,
-          required: true,
         },
       },
     ],
